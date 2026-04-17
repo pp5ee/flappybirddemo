@@ -236,9 +236,10 @@ class Game {
         const spawnIntervalMs = (CONFIG.pipe.spawnInterval / 60) * 1000;
         this.pipeSpawnTimer += deltaTime * 16.67;
 
-        if (this.pipeSpawnTimer >= spawnIntervalMs) {
+        // Catch up on missed spawns (handle frame stalls)
+        while (this.pipeSpawnTimer >= spawnIntervalMs) {
             this.spawnPipe();
-            this.pipeSpawnTimer = 0;
+            this.pipeSpawnTimer -= spawnIntervalMs;
         }
 
         // Move pipes (scaled by delta time)
@@ -528,8 +529,11 @@ class Game {
     // ============================================
     gameLoop(timestamp) {
         // Calculate delta time for consistent physics
-        const deltaTime = this.lastTime ? (timestamp - this.lastTime) / 16.67 : 1;
+        let deltaTime = this.lastTime ? (timestamp - this.lastTime) / 16.67 : 1;
         this.lastTime = timestamp;
+
+        // Clamp delta time to prevent tunneling after tab resume
+        deltaTime = Math.min(deltaTime, 3);
 
         // Update game physics with delta time
         this.updatePhysics(deltaTime);
