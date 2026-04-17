@@ -284,7 +284,7 @@ class Game {
                 return;
             }
 
-            if (!pipe.passed && pipe.x + CONFIG.pipe.width < bird.x) {
+            if (!pipe.passed && bird.x + bird.width > pipe.x) {
                 pipe.passed = true;
                 this.score++;
                 this.updateScoreDisplay();
