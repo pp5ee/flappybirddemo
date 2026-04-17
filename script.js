@@ -350,11 +350,6 @@ class Game {
 
         // Draw particles
         this.drawParticles(ctx);
-
-        // Draw score (during gameplay)
-        if (this.state === GameState.PLAYING) {
-            this.drawScore(ctx);
-        }
     }
 
     drawBackground(ctx) {

@@ -1,0 +1,3 @@
+[P2] Restart button is not keyboard-accessible for gameplay start/restart flow. `script.js:117` ignores input in `GAME_OVER`, so keyboard/touch users who rely on Space cannot restart after losing, despite the rest of the game supporting keyboard-first interaction. This is a usability/accessibility regression rather than a crash, but it leaves the main loop effectively stuck for some users until they can click `#restartBtn`.
+
+[P3] `README.md` documents a nonexistent config field. `README.md:58` and `README.md:73` mention `pipe.minGap`, but `script.js:24` defines no such option and pipe spawning does not use it. This can mislead maintainers trying to tune difficulty.
