@@ -58,20 +58,31 @@ Edit the `CONFIG` object in `script.js` to customize:
 
 ```javascript
 const CONFIG = {
-    canvas: { width: 400, height: 600 },
-    bird: { width: 30, height: 30, color: '#FFD700', gravity: 0.5, jumpVelocity: -8 },
-    pipe: { width: 50, gap: 150, speed: 2, spawnInterval: 100 },
-    // ... more options
+    canvasWidth: 400,
+    canvasHeight: 600,
+    bird: {
+        x: 60, y: 250,
+        width: 34, height: 24,
+        color: '#f1c40f', wingColor: '#f39c12',
+        gravity: 0.45, jumpVelocity: -8.5, maxVelocity: 12
+    },
+    pipe: {
+        width: 52, gap: 150, minGap: 120,
+        spawnInterval: 95, speed: 2.5,
+        color: '#27ae60', capColor: '#229954', borderColor: '#1e8449'
+    },
+    ground: { height: 80, color: '#8B4513', grassColor: '#27ae60' },
+    scoreFont: 'bold 48px Arial', scoreColor: '#fff'
 };
 ```
 
 ### Available Options
 
-- `canvas`: Game dimensions
-- `bird`: Bird size, color, gravity, jump strength
-- `pipe`: Pipe width, gap size, speed, spawn rate
-- `ground`: Ground height and color
-- `colors`: Sky gradient and color palette
+- `canvasWidth` / `canvasHeight`: Game dimensions
+- `bird`: Position (x, y), size (width, height), colors, physics (gravity, jumpVelocity, maxVelocity)
+- `pipe`: width, gap size, minGap, spawnInterval, speed, colors
+- `ground`: height and colors
+- `scoreFont` / `scoreColor`: Score display styling
 
 ## Project Structure
 

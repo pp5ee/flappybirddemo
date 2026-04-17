@@ -63,6 +63,7 @@ class Game {
         this.gameOverOverlay = document.getElementById('gameOverOverlay');
         this.finalScoreElement = document.getElementById('finalScore');
         this.restartBtn = document.getElementById('restartBtn');
+        this.scoreDisplay = document.getElementById('scoreDisplay');
 
         // Initialize game state
         this.state = GameState.READY;
@@ -164,6 +165,10 @@ class Game {
 
         // Create death particles
         this.createParticles(this.bird.x, this.bird.y, 12);
+    }
+
+    updateScoreDisplay() {
+        this.scoreDisplay.textContent = this.score;
     }
 
     // ============================================
@@ -277,6 +282,7 @@ class Game {
             if (!pipe.passed && bird.x > pipe.x + CONFIG.pipe.width) {
                 pipe.passed = true;
                 this.score++;
+                this.updateScoreDisplay();
             }
         }
     }
