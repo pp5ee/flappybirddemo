@@ -276,7 +276,7 @@ class Game {
             const inPipeX = bird.x + bird.width > pipe.x && bird.x < pipe.x + CONFIG.pipe.width;
 
             // Check scoring (pipe passed behind bird)
-            if (!pipe.passed && pipe.x + CONFIG.pipe.width < bird.x) {
+            if (!pipe.passed && pipe.x + CONFIG.pipe.width < bird.x + bird.width) {
                 pipe.passed = true;
                 this.score++;
                 this.updateScoreDisplay();
