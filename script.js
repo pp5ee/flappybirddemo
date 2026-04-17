@@ -123,7 +123,7 @@ class Game {
                 this.birdJump();
                 break;
             case GameState.GAME_OVER:
-                // Restart handled by button
+                this.restart();
                 break;
         }
     }

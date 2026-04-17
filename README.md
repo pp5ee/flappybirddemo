@@ -67,7 +67,7 @@ const CONFIG = {
         gravity: 0.45, jumpVelocity: -8.5, maxVelocity: 12
     },
     pipe: {
-        width: 52, gap: 150, minGap: 120,
+        width: 52, gap: 150,
         spawnInterval: 95, speed: 2.5,
         color: '#27ae60', capColor: '#229954', borderColor: '#1e8449'
     },
@@ -80,7 +80,7 @@ const CONFIG = {
 
 - `canvasWidth` / `canvasHeight`: Game dimensions
 - `bird`: Position (x, y), size (width, height), colors, physics (gravity, jumpVelocity, maxVelocity)
-- `pipe`: width, gap size, minGap, spawnInterval, speed, colors
+- `pipe`: width, gap size, spawnInterval, speed, colors
 - `ground`: height and colors
 - `scoreFont` / `scoreColor`: Score display styling
 
