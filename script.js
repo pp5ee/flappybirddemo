@@ -1,6 +1,9 @@
 // ============================================
 // FLAPPY BIRD - Game Configuration
 // ============================================
+const FPS = 60;
+const FRAME_TIME = 1000 / FPS;
+
 const CONFIG = {
     // Canvas dimensions
     canvasWidth: 400,
@@ -232,9 +235,8 @@ class Game {
     }
 
     updatePipes(deltaTime = 1) {
-        // Time-based pipe spawning (convert frames to ms: 95 frames @ 60fps ≈ 1583ms)
-        const spawnIntervalMs = (CONFIG.pipe.spawnInterval / 60) * 1000;
-        this.pipeSpawnTimer += deltaTime * 16.67;
+        const spawnIntervalMs = (CONFIG.pipe.spawnInterval / FPS) * 1000;
+        this.pipeSpawnTimer += deltaTime * FRAME_TIME;
 
         // Catch up on missed spawns (handle frame stalls)
         while (this.pipeSpawnTimer >= spawnIntervalMs) {
@@ -271,21 +273,17 @@ class Game {
         const bird = this.bird;
 
         for (const pipe of this.pipes) {
-            // Check if bird is within pipe horizontal range
-            if (bird.x + bird.width > pipe.x && bird.x < pipe.x + CONFIG.pipe.width) {
-                // Check collision with upper pipe
-                if (bird.y < pipe.gapY - CONFIG.pipe.gap / 2) {
-                    this.gameOver();
-                    return;
-                }
-                // Check collision with lower pipe
-                if (bird.y + bird.height > pipe.gapY + CONFIG.pipe.gap / 2) {
-                    this.gameOver();
-                    return;
-                }
+            const inPipeX = bird.x + bird.width > pipe.x && bird.x < pipe.x + CONFIG.pipe.width;
+            if (!inPipeX) continue;
+
+            const inUpper = bird.y < pipe.gapY - CONFIG.pipe.gap / 2;
+            const inLower = bird.y + bird.height > pipe.gapY + CONFIG.pipe.gap / 2;
+
+            if (inUpper || inLower) {
+                this.gameOver();
+                return;
             }
 
-            // Score update - when bird passes pipe
             if (!pipe.passed && bird.x > pipe.x + CONFIG.pipe.width) {
                 pipe.passed = true;
                 this.score++;
@@ -528,8 +526,7 @@ class Game {
     // GAME LOOP
     // ============================================
     gameLoop(timestamp) {
-        // Calculate delta time for consistent physics
-        let deltaTime = this.lastTime ? (timestamp - this.lastTime) / 16.67 : 1;
+        let deltaTime = this.lastTime ? (timestamp - this.lastTime) / FRAME_TIME : 1;
         this.lastTime = timestamp;
 
         // Clamp delta time to prevent tunneling after tab resume
