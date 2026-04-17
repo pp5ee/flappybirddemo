@@ -196,6 +196,11 @@ class Game {
         // Check boundaries
         this.checkBoundaries();
 
+        // Early return if game ended
+        if (this.state !== GameState.PLAYING) {
+            return;
+        }
+
         // Update pipes
         this.updatePipes();
 
