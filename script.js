@@ -24,7 +24,6 @@ const CONFIG = {
     pipe: {
         width: 52,
         gap: 150,           // Vertical gap between pipes
-        minGap: 120,        // Minimum gap for variety
         spawnInterval: 95,  // Frames between pipe spawns
         speed: 2.5,         // Horizontal movement speed
         color: '#27ae60',
@@ -69,6 +68,8 @@ class Game {
         this.state = GameState.READY;
         this.score = 0;
         this.frameCount = 0;
+        this.lastTime = 0;
+        this.pipeSpawnTimer = 0;
 
         // Game entities
         this.bird = { ...CONFIG.bird, velocity: 0 };
@@ -79,7 +80,6 @@ class Game {
         this.bindInputHandlers();
 
         // Start the render loop
-        this.lastTime = 0;
         this.gameLoop = this.gameLoop.bind(this);
         requestAnimationFrame(this.gameLoop);
     }
@@ -142,6 +142,7 @@ class Game {
         this.state = GameState.READY;
         this.score = 0;
         this.frameCount = 0;
+        this.pipeSpawnTimer = 0;
 
         // Reset bird
         this.bird = {
@@ -154,6 +155,7 @@ class Game {
         this.particles = [];
 
         // Update UI
+        this.scoreDisplay.textContent = '0';
         this.gameOverOverlay.classList.add('hidden');
         this.startOverlay.classList.remove('hidden');
     }
@@ -181,22 +183,22 @@ class Game {
         this.createParticles(this.bird.x - 10, this.bird.y + 10, 4);
     }
 
-    updatePhysics() {
+    updatePhysics(deltaTime = 1) {
+        // Always update particles for death effects
+        this.updateParticles();
+
         if (this.state !== GameState.PLAYING) return;
 
-        // Apply gravity
-        this.bird.velocity += CONFIG.bird.gravity;
+        // Apply gravity (scaled by delta time)
+        this.bird.velocity += CONFIG.bird.gravity * deltaTime;
 
         // Clamp velocity
         if (this.bird.velocity > CONFIG.bird.maxVelocity) {
             this.bird.velocity = CONFIG.bird.maxVelocity;
         }
 
-        // Update bird position
-        this.bird.y += this.bird.velocity;
-
-        // Update particles
-        this.updateParticles();
+        // Update bird position (scaled by delta time)
+        this.bird.y += this.bird.velocity * deltaTime;
 
         // Check boundaries
         this.checkBoundaries();
@@ -206,8 +208,8 @@ class Game {
             return;
         }
 
-        // Update pipes
-        this.updatePipes();
+        // Update pipes with time-based spawning
+        this.updatePipes(deltaTime);
 
         // Check collisions
         this.checkCollisions();
@@ -229,16 +231,20 @@ class Game {
         }
     }
 
-    updatePipes() {
-        // Spawn new pipes
-        if (this.frameCount % CONFIG.pipe.spawnInterval === 0) {
+    updatePipes(deltaTime = 1) {
+        // Time-based pipe spawning (convert frames to ms: 95 frames @ 60fps ≈ 1583ms)
+        const spawnIntervalMs = (CONFIG.pipe.spawnInterval / 60) * 1000;
+        this.pipeSpawnTimer += deltaTime * 16.67;
+
+        if (this.pipeSpawnTimer >= spawnIntervalMs) {
             this.spawnPipe();
+            this.pipeSpawnTimer = 0;
         }
 
-        // Move pipes
+        // Move pipes (scaled by delta time)
         for (let i = this.pipes.length - 1; i >= 0; i--) {
             const pipe = this.pipes[i];
-            pipe.x -= CONFIG.pipe.speed;
+            pipe.x -= CONFIG.pipe.speed * deltaTime;
 
             // Remove pipes that are off screen
             if (pipe.x + CONFIG.pipe.width < 0) {
@@ -521,8 +527,12 @@ class Game {
     // GAME LOOP
     // ============================================
     gameLoop(timestamp) {
-        // Update game physics
-        this.updatePhysics();
+        // Calculate delta time for consistent physics
+        const deltaTime = this.lastTime ? (timestamp - this.lastTime) / 16.67 : 1;
+        this.lastTime = timestamp;
+
+        // Update game physics with delta time
+        this.updatePhysics(deltaTime);
 
         // Render everything
         this.render();
